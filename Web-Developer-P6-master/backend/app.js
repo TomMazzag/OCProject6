@@ -1,11 +1,8 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
-const connectKey = require('./connect')
 const path = require('path')
-
-const stuffRoute = require('./routes/stuff')
-const userRoute = require('./routes/user')
+const connectKey = require('./connect')
 
 app.use(express.json());
 
@@ -25,9 +22,4 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/images', express.static(path.join(__dirname, 'images')))
-
-app.use('/api/stuff', stuffRoute);
-app.use('/api/auth', userRoute)
-
-module.exports = app;
+module.exports = (app);
