@@ -1,5 +1,6 @@
 const e = require('express');
-const Sauce = require('../models/sauce')
+const Sauce = require('../models/sauce');
+const sauce = require('../models/sauce');
 
 exports.getAllSauces = (req, res, next) => {
     Sauce.find().then((sauces) => {
@@ -105,6 +106,40 @@ exports.deleteSauce = (req, res, next) => {
         }
     )
 }
+
 exports.likeSauce = (req, res, next) => {
-    
+    const like = req.body.like;
+    Sauce.findOne({_id: req.params.id}).then(
+        (sauce) => {
+            console.log(like)
+            if (like === -1) {
+                sauce.usersDisliked.push(req.body.userId)
+            }
+            if (like === 1) {
+                sauce.usersLiked.push(req.body.userId)
+            }
+            if (like === 0) {
+                if (sauce.usersLiked.includes(req.body.userId)) {
+                    idIndex = sauce.usersLiked.indexOf(req.body.userId)
+                    sauce.usersLiked.splice(idIndex, 1)
+                } else {
+                    idIndex = sauce.usersDisliked.indexOf(req.body.userId)
+                    sauce.usersDisliked.splice(idIndex, 1) 
+                }
+            }
+            sauce.dislikes = sauce.usersDisliked.length
+            sauce.likes = sauce.usersLiked.length
+            
+            sauce.save().then(() => {
+                res.status(200).json({
+                    message: 'Like added'
+                });
+            }
+            ).catch((error) => {
+                res.status(400).json({
+                    error: error
+                })
+            });
+        }
+    )
 }
